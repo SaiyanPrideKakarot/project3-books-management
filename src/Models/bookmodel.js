@@ -13,7 +13,7 @@ const bookSchema = new mongoose.Schema({
         required: 'Excerpt is required',
         trim: true
     },
-    bookCover: { type: String },
+
     userId: {
         type: ObjectId,
         ref: 'User',
@@ -33,11 +33,13 @@ const bookSchema = new mongoose.Schema({
     },
     subcategory: {
         type: [String],
-        required: 'Subcategory is required'
+        required: 'Subcategory is required',
+        trim: true
     },
     reviews: {
         type: Number,
         default: 0,
+        // comment :count,
         trim: true
     },
     deletedAt: {
@@ -48,7 +50,11 @@ const bookSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    releasedAt: { type: Date, required: true },
+    releasedAt: {
+        type: Date,
+        required: true
+        //format('YYYY-MM-DD')
+    },
 
 }, { timestamps: true });
 
