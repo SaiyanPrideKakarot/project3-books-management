@@ -16,7 +16,7 @@ const bookSchema = new mongoose.Schema({
     bookCover: { type: String },
     userId: {
         type: ObjectId,
-        ref: "bookManagementPrtoject_user",
+        ref: 'User',
         required: "User Id is required",
         trim: true
     },
@@ -40,7 +40,10 @@ const bookSchema = new mongoose.Schema({
         default: 0,
         trim: true
     },
-    deletedAt: { type: Date },
+    deletedAt: {
+        type: Date,
+        default: null
+    },
     isDeleted: {
         type: Boolean,
         default: false
@@ -49,4 +52,4 @@ const bookSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model('bookManagementProject_book', bookSchema);
+module.exports = mongoose.model('Book', bookSchema);
