@@ -9,64 +9,77 @@ const userModel = require('../Models/userModel')
 const jwt = require('jsonwebtoken')
 
 
-const isValid= (email)=>{
-    regex=/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
+const isValid = (email) => {
+    regex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
     return regex.test(email)
 }
 
-const isPassword = function (password){
-    regex  = /^[a-zA-Z0-9!@#$%^&*]{8,15}$/
+const isPassword = function (password) {
+    regex = /^[a-zA-Z0-9!@#$%^&*]{8,15}$/
     return regex.test(password)
 }
 
 
 
-const userLogin = async (req,res) =>{
-     
-    let body = req.body
-    let {email,password} = body
+const userLogin = async (req, res) => {
 
-   if(Object.keys(body).length==0){
-    res.status(400).send({status:false, msg:"Please Enter Email_ID And Password"})
-   }
+    try {
+        let body = req.body
+        let { email, password } = body
 
-   if(!email){
-    res.status(400).send({status:false, msg:"Please Enter Email_ID "})
-   }
-   if(!isValid(email)){
-    res.status(400).send({status:false, msg:"Please Enter Valid Email_ID"})
-   }
-   
-   let emailExist = await userModel.findOne({email:email})
+        if (Object.keys(body).length == 0) {
+            res.status(400).send({ status: false, msg: "Please Enter Email_ID And Password" })
+        }
 
-   if(!emailExist){
-    res.status(400).send({status:false, msg:"You Are Not Register, Please Try Again"})
-   }
+        if (!email) {
+            res.status(400).send({ status: false, msg: "Please Enter Email_ID " })
+        }
+        if (!isValid(email)) {
+            res.status(400).send({ status: false, msg: "Please Enter Valid Email_ID" })
+        }
 
+        let emailExist = await userModel.findOne({ email: email })
 
-if(!password){
-    res.status(400).send({status:false, msg:"Please Enter Email_ID "})
-   }
-   if(!isPassword(password)){
-    res.status(400).send({status:false, msg:"Please Enter Valid Email_ID"})
-   }
-   
-   let passwordCheck = await userModel.findOne({email:email,password:password})
-   if(!passwordCheck){
-    res.status(400).send({status:false, msg:"Wrong password, Please Try Again"})
-   }
-
-   let userId = passwordCheck._id
-
-   let token = jwt.sign({
-                    userId : userId._id
-                        },"this is secret key",{expiresIn: '1500'})
-     
-
-    res.setHeader("x-api-token", token)  
-    res.status(201).send({status:false, Data:token})                
+        if (!emailExist) {
+            res.status(400).send({ status: false, msg: "You Are Not Register, Please Try Again" })
+        }
 
 
+
+
+
+
+
+        if (!password) {
+            res.status(400).send({ status: false, msg: "Please Enter Email_ID " })
+        }
+        if (!isPassword(password)) {
+            res.status(400).send({ status: false, msg: "Please Enter Valid Email_ID" })
+        }
+
+        let passwordCheck = await userModel.findOne({ email: email, password: password })
+        if (!passwordCheck) {
+            res.status(400).send({ status: false, msg: "Wrong password, Please Try Again" })
+        }
+
+
+
+
+
+        
+        let userId = passwordCheck._id
+
+        let token = jwt.sign({
+            userId: userId._id
+        }, "this is secret key", { expiresIn: '1500' })
+
+
+        res.setHeader("x-api-token", token)
+        res.status(201).send({ status: false, Data: token })
+
+    } catch (err) {
+        res.status(500).send({ status: false, error: err.message })
+    }
 }
 
-module.exports = {userLogin}
+module.exports = { userLogin }
