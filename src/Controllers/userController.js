@@ -8,6 +8,10 @@
 const userModel = require('../Models/userModel')
 const jwt = require('jsonwebtoken')
 
+const isValidName = function (name) {
+    const nameRegex = /^[a-zA-Z]+(\s[a-zA-Z]+)?$/
+    return nameRegex.test(name)
+}
 
 const isEmail = (email) => {
     regex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
@@ -19,10 +23,16 @@ const isPassword = function (password) {
     return regex.test(password)
 }
 
-const isvalid = function (value) {
-    if (typeof(value) === undefined || typeof (value) === null)  {return false}
-    if (value.trim().length==0) {return false} {return false}
-    if (typeof (value) === "string" && value.trim().length > 0) { return true }
+const isValid = function (value) {
+    if (typeof value !== 'string'|| value.trim().length ==0) {
+        return false
+    } 
+        return true
+}
+
+const isValidPhone = function (phone) {
+    let validPhone = /^((\+91)?|91)?[0-9]{10}$/;
+    return validPhone.test(phone);
 }
 
 
@@ -34,31 +44,56 @@ const createuser = async function (req, res) {
     let data = req.body 
     const {title, name, phone, email, password} = data;
 
-    if (Object.keys(data)==0) {return res.status(400).send({ status :false , message :'No data provided' })}
+    if (Object.keys(data)==0) {
+        return res.status(400).send({ status :false , message :'No data provided' })
+    }
 
-    if (!isvalid(title)) {return res.status(400).send({status : false ,message :"title is required"})}
+    if (!isValid(title)) {
+        return res.status(400).send({status : false ,message :"Title is required"})
+    }
 
-    if (!(title.trim() == 'mr' || title.trim() == 'mrs')) {return res.status(400).send({status:false,message:'please provode appropriate title' })}
+    if ((title !== "Mr") && (title !== "Mrs") && (title !== "Miss")) {
+        return res.status(400).send({ status: false, msg: "Title should be Mr or Mrs or Miss only" })
+    }
 
-    if (!isValid(name)) { return res.status(400).send({ status: false, message: 'Name is required' }) }
+    if (!isValid(name)) {
+        return res.status(400).send({ status: false, message: 'Name is required' })
+    }
+    if (!isValidName(name)) {
+        return res.status(400).send({status: false, message: "Please enter a valid Name"})
+    }
 
-    if (!isValid(phone)) { return res.status(400).send({ status: false, message: 'Phone Number is required' }) }
+    if (!isValid(phone)) {
+        return res.status(400).send({ status: false, message: 'Phone Number is required' })
+    }
+    if (!isValidPhone(phone)) {
+        return res.status(400).send({status: false, message: "Please enter a valid Phone Number"})
+    }
 
-    //if (!isRightFormatphone(phone)) { return res.status(400).send({ status: false, message: 'Please provide a valid phone number' }) }
+    let isUniquephone = await userModel.findOne({ phone: phone })
+    if (isUniquephone) {
+        return res.status(404).send({ status: false, message: 'Phone number already exist' })
+    }
 
-    let isUniquephone = await userModel.findOne({  })
-    if (isUniquephone) { return res.status(400).send({ status: false, message: 'Phone number already exist' }) }
+    if (!isValid(email)) {
+        return res.status(400).send({ status: false, message: 'Email is required' })
+    }
+    if (!isEmail(email)) {
+        return res.status(400).send({status: false, message: "Please enter a valid Email address"})
+    }
 
-    if (!isValid(email)) { return res.status(400).send({ status: false, message: 'Email is required' }) }
+    let isUniqueemail = await userModel.findOne({email: email})
+    if (isUniqueemail) {
+        return res.status(404).send({ status: false, message: 'Email Id already exist' })
+    }
 
-   // if (!isRightFormatemail(email)) { return res.status(400).send({ status: false, message: 'Please provide a valid email' }) }
+    if (!isValid(password)) {
+        return res.status(400).send({ status: false, message: 'Password is required' })
+    }
 
-    let isUniqueemail = await userModel.findOne({ })
-    if (isUniqueemail) { return res.status(400).send({ status: false, message: 'Email Id already exist' }) }
-
-    if (!isValid(password)) { return res.status(400).send({ status: false, message: 'Password is required' }) }
-
-    if (password.length < 8 || password.length > 15) { return res.status(400).send({ status: false, message: 'Password should be of minimum 8 characters & maximum 15 characters' }) }
+    if (password.length < 8 || password.length > 15) {
+        return res.status(400).send({ status: false, message: 'Password should be of minimum 8 characters & maximum 15 characters' })
+    }
     //validation end
     const newUser = await userModel.create(data);
     return res.status(201).send({ status: true, message: 'User successfully created', data: newUser })
