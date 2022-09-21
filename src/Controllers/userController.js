@@ -19,10 +19,15 @@ const isPassword = function (password) {
     return regex.test(password)
 }
 
-const isvalid = function (value) {
-    if (typeof(value) === undefined || typeof (value) === null)  {return false}
-    if (value.trim().length==0) {return false} {return false}
-    if (typeof (value) === "string" && value.trim().length > 0) { return true }
+const isMobile = function (phone) {
+    regex = /^\d{10}$/
+    return regex.test(phone)
+}
+
+const isValid = function (value) {
+    if (typeof (value) !== "string" || value.trim().length == 0) {
+        return false
+    } return true
 }
 
 
@@ -31,43 +36,112 @@ const createuser = async function (req, res) {
 
     try {
 
-    let data = req.body 
-    const {title, name, phone, email, password} = data;
+        let data = req.body
+        const { title, name, phone, email, password, address } = data;
 
-    if (Object.keys(data)==0) {return res.status(400).send({ status :false , message :'No data provided' })}
+        if (Object.keys(data).length == 0) {
+            return res.status(400).send({ status: false, message: 'No data provided' })
+        }
 
-    if (!isvalid(title)) {return res.status(400).send({status : false ,message :"title is required"})}
+        if (!title) {
+            return res.status(400).send({ status: false, message: "Please enter Title" })
+        }
 
-    if (!(title.trim() == 'mr' || title.trim() == 'mrs')) {return res.status(400).send({status:false,message:'please provode appropriate title' })}
+        if (!isValid(title)) {
+            return res.status(400).send({ status: false, message: "title is required" })
+        }
 
-    if (!isValid(name)) { return res.status(400).send({ status: false, message: 'Name is required' }) }
+        let Title = ["Mr", "Miss", "Mrs"]
+        if (!Title.includes(title)) {
+            return res.status(400).send({ status: false, message: 'please provode appropriate title' })
+        }
 
-    if (!isValid(phone)) { return res.status(400).send({ status: false, message: 'Phone Number is required' }) }
 
-    //if (!isRightFormatphone(phone)) { return res.status(400).send({ status: false, message: 'Please provide a valid phone number' }) }
 
-    let isUniquephone = await userModel.findOne({  })
-    if (isUniquephone) { return res.status(400).send({ status: false, message: 'Phone number already exist' }) }
 
-    if (!isValid(email)) { return res.status(400).send({ status: false, message: 'Email is required' }) }
+        if (!name) {
+            return res.status(400).send({ status: false, message: "Name is required" })
+        }
 
-   // if (!isRightFormatemail(email)) { return res.status(400).send({ status: false, message: 'Please provide a valid email' }) }
+        if (!isValid(name)) {
+            return res.status(400).send({ status: false, message: 'Please enter valid name' })
+        }
+        name.toLowerCase()
 
-    let isUniqueemail = await userModel.findOne({ })
-    if (isUniqueemail) { return res.status(400).send({ status: false, message: 'Email Id already exist' }) }
+        if (!phone) {
+            return res.status(400).send({ status: false, message: 'Please enter Mobile number' })
+        }
+        if (!isValid(phone)) {
+            return res.status(400).send({ status: false, message: 'Phone Number is required' })
+        }
+        if (!isMobile(phone)) {
+            return res.status(400).send({ status: false, message: 'please enter valid mobile Number' })
+        }
 
-    if (!isValid(password)) { return res.status(400).send({ status: false, message: 'Password is required' }) }
 
-    if (password.length < 8 || password.length > 15) { return res.status(400).send({ status: false, message: 'Password should be of minimum 8 characters & maximum 15 characters' }) }
-    //validation end
-    const newUser = await userModel.create(data);
-    return res.status(201).send({ status: true, message: 'User successfully created', data: newUser })
-}
+        let isUniquephone = await userModel.findOne({ phone: phone })
+        if (isUniquephone) { return res.status(400).send({ status: false, message: 'Phone number already exist' }) }
 
- catch (error) {
-    console.log(error)
-    return res.status(500).send({ message: error.message })
-}
+        if (!email) {
+            return res.status(400).send({ status: false, message: 'Phone number already exist' })
+        }
+        if (!isValid(email)) {
+            return res.status(400).send({ status: false, message: 'Email is required' })
+        }
+
+        if (!isEmail(email)) {
+            return res.status(400).send({ status: false, message: 'please enter valid email address' })
+        }
+
+
+
+        let isUniqueemail = await userModel.findOne({ email: email })
+        if (isUniqueemail) {
+            return res.status(400).send({ status: false, message: 'Email Id already exist' })
+        }
+        if (!password) {
+            return res.status(400).send({ status: false, message: 'Please enter  password' })
+        }
+        if (!isValid(password)) {
+            return res.status(400).send({ status: false, message: 'please enter valid password' })
+        }
+
+        if (!isPassword(password)) {
+            return res.status(400).send({ status: false, message: 'please enter valid password' })
+        }
+
+
+        if (address) {
+            if (Object.keys(address).length == 0) {
+                return res.status(400).send({ status: false, msg: "please enter address value" })
+            }
+            if (address.street) {
+                if (!isValid(address.street)) {
+                    return res.status(400).send({ status: false, msg: "please provide vaild street" })
+                }
+            }
+            if (address.city)
+                if (!isValid(address.city)) {
+                    return res.status(400).send({ status: false, msg: "please provide vaild city" })
+                }
+
+            if (address.pincode)
+                if (!isValid(address.pincode)) {
+                    return res.status(400).send({ status: false, msg: "please provide vaild pincode" })
+                }
+
+
+        }
+        let obj = { title, name, email, address, password, phone }
+        //validation end
+        const newUser = await userModel.create(obj);
+        return res.status(201).send({ status: true, message: 'User successfully created', data: newUser })
+    }
+
+    catch (error) {
+        console.log(error)
+        return res.status(500).send({ message: error.message })
+    }
 
 }
 
@@ -115,7 +189,7 @@ const userLogin = async (req, res) => {
         }
 
 
-        
+
         let userId = passwordCheck._id
 
         let token = jwt.sign({
@@ -136,5 +210,5 @@ const userLogin = async (req, res) => {
 
 
 
-module.exports.createuser  =  createuser
-module.exports.userLogin   =  userLogin 
+module.exports.createuser = createuser
+module.exports.userLogin = userLogin 
