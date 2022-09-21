@@ -158,38 +158,36 @@ const userLogin = async (req, res) => {
         let { email, password } = body
 
         if (Object.keys(body).length == 0) {
-            res.status(400).send({ status: false, msg: "Please Enter Email_ID And Password" })
+            return res.status(400).send({ status: false, msg: "please enter detail " })
+
         }
 
         if (!email) {
-            res.status(400).send({ status: false, msg: "Please Enter Email_ID " })
+            return res.status(400).send({ status: false, msg: "Please Enter Email_ID " })
         }
         if (!isEmail(email)) {
-            res.status(400).send({ status: false, msg: "Please Enter Valid Email_ID" })
+            return res.status(400).send({ status: false, msg: "Please Enter Valid Email_ID" })
         }
 
         let emailExist = await userModel.findOne({ email: email })
 
         if (!emailExist) {
-            res.status(400).send({ status: false, msg: "You Are Not Register, Please Try Again" })
+            return res.status(400).send({ status: false, msg: "You Are Not Register, Please Try Again" })
         }
-
-
-
 
 
 
 
         if (!password) {
-            res.status(400).send({ status: false, msg: "Please Enter Email_ID " })
+            return res.status(400).send({ status: false, msg: "Please Enter Email_ID " })
         }
         if (!isPassword(password)) {
-            res.status(400).send({ status: false, msg: "Please Enter Valid Email_ID" })
+            return res.status(400).send({ status: false, msg: "Please Enter Valid Email_ID" })
         }
 
         let passwordCheck = await userModel.findOne({ email: email, password: password })
         if (!passwordCheck) {
-            res.status(400).send({ status: false, msg: "Wrong password, Please Try Again" })
+            return res.status(400).send({ status: false, msg: "Wrong password, Please Try Again" })
         }
 
 
@@ -202,10 +200,10 @@ const userLogin = async (req, res) => {
 
 
         res.setHeader("x-api-token", token)
-        res.status(201).send({ status: false, Data: token })
+        res.status(201).send({ status: false, message: "Success", Data: token })
 
     } catch (err) {
-        res.status(500).send({ status: false, error: err.message })
+        return res.status(500).send({ status: false, error: err.message })
     }
 }
 
