@@ -1,6 +1,8 @@
 const BookModel = require('../Models/bookModel')
 const UserModel = require('../Models/userModel')
 const mongoose = require('mongoose')
+let ObjectId = mongoose.Schema.Types.ObjectId
+
 
 
 const isValidObjectId = (ObjectId) => {
@@ -8,45 +10,46 @@ const isValidObjectId = (ObjectId) => {
 }
 
 const isValidString = function (data) {
-    if (typeof data !== 'string'|| data.trim().length ==0) {
+    if (typeof data !== 'string' || data.trim().length == 0) {
         return false
-    } 
-        return true
+    }
+    return true
+
 }
 
 const isValidFormat = new RegExp(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)
 
 
-const createBooks = async function(req, res) {
+const createBooks = async function (req, res) {
     try {
         let data = req.body
         if (Object.keys(data).length === 0) {
-            return res.status(400).send({status: false, message: "Please enter Books Details"})
+            return res.status(400).send({ status: false, message: "Please enter Books Details" })
         }
-        let {title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt} = data
+        let { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt } = data
         let createBook = {}
         if (!isValidString(title)) {
-            return res.status(400).send({status: false, message: "Title must be string and cannot be empty"})
+            return res.status(400).send({ status: false, message: "Title must be string and cannot be empty" })
         }
         createBook.title = title
         if (!isValidString(excerpt)) {
-            return res.status(400).send({status: false, message: "Excerpt must be string and cannot be empty"})
+            return res.status(400).send({ status: false, message: "Excerpt must be string and cannot be empty" })
         }
         createBook.excerpt = excerpt
         if (!isValidObjectId(userId)) {
-            return res.status(400).send({status: false, message: "Enter a Valid User Id"})
+            return res.status(400).send({ status: false, message: "Enter a Valid User Id" })
         }
         createBook.userId = userId
         if (!isValidString(ISBN)) {
-            return res.status(400).send({status: false, message: "ISBN must be string and cannot be empty"})
+            return res.status(400).send({ status: false, message: "ISBN must be string and cannot be empty" })
         }
         createBook.ISBN = ISBN
         if (!isValidString(category)) {
-            return res.status(400).send({status: false, message: "Category must be string and cannot be empty"})
+            return res.status(400).send({ status: false, message: "Category must be string and cannot be empty" })
         }
         createBook.category = category
         if (!isValidString(subcategory)) {
-            return res.status(400).send({status: false, message: "Subcategory must be string and cannot be empty"})
+            return res.status(400).send({ status: false, message: "Subcategory must be string and cannot be empty" })
         }
         createBook.subcategory = subcategory
         if (reviews) {
@@ -54,19 +57,19 @@ const createBooks = async function(req, res) {
         }
         if (releasedAt) {
             if (!isValidFormat) {
-                return res.status(400).send({status: false, message: "Please enter Released Date in valid format i.e. YYYY-MM-DD"})
+                return res.status(400).send({ status: false, message: "Please enter Released Date in valid format i.e. YYYY-MM-DD" })
             }
             createBook.releasedAt = releasedAt
         }
         let findId = await UserModel.findById(userId)
         if (!findId) {
-            return res.status(404).send({status: false, message: "User not found"})
+            return res.status(404).send({ status: false, message: "User not found" })
         }
         let savedData = await BookModel.create(createBook)
-        return res.status(201).send({status: true, message: "Book created susseccfully", data: savedData})
+        return res.status(201).send({ status: true, message: "Book created susseccfully", data: savedData })
     } catch (error) {
         console.log(error)
-        return res.status(500).send({status: false, message: error.message})
+        return res.status(500).send({ status: false, message: error.message })
     }
 }
 
@@ -115,7 +118,32 @@ const getBooksByQuery = async function (req, res) {
 }
 
 
+const getBookFromPath = async function (req, res) {
 
-module.exports.createBooks = createBooks
-module.exports.getBooksByQuery = getBooksByQuery
+    let bookID = req.params.bookid
+    bookID.trim()
+
+    if (!bookID) {
+        res.status(400).send({ status: false, msg: "Please Enter BookId" })
+    }
+    if (!ObjectId.isValid(bookID)) {
+        res.status(400).send({ status: false, msg: "Please Enter Valid BookId" })
+    }
+
+    let searchBook = await BookModel.findOne({ bookid: bookID, isDeleted: false })
+
+    if (!searchBook) {
+        res.status(404).send({ status: false, msg: "Your BookId Not Found" })
+    }
+
+    res.status(201).send({ status: false, data: searchBook })
+
+
+
+}
+
+
+
+module.exports = { createBooks, getBooksByQuery, getBookFromPath }
+
 
