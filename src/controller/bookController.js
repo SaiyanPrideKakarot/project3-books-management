@@ -8,13 +8,11 @@ const isValidObjectId = (ObjectId) => {
 }
 
 const isValidString = function (data) {
-    if (typeof data !== 'string') {
+    if (typeof data !== 'string'|| data.trim().length ==0) {
         return false
-    } else if (typeof data === 'string' && data.trim().length == 0) {
-        return false
-    } else {
+    } 
         return true
-    }
+    
 }
 
 const isValidFormat = new RegExp(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)
