@@ -1,4 +1,4 @@
-const BookModel = require('../Models/bookmodel')
+const BookModel = require('../Models/bookModel')
 const UserModel = require('../Models/userModel')
 const mongoose = require('mongoose')
 
