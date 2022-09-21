@@ -78,7 +78,7 @@ const getBooksByQuery = async function (req, res) {
     try {
         let bodyData = req.query
         if (Object.keys(bodyData).length === 0) {
-            let allBooks = await BookModel.find({isDeleted: true}).sort({title: 1})
+            let allBooks = await BookModel.find({isDeleted: true}).select({title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1}).sort({title: 1})
             return res.status(200).send({status: false, message: "List of All Books", data: allBooks})
         } else {
             let {userId, category, subcategory} = bodyData
@@ -102,8 +102,11 @@ const getBooksByQuery = async function (req, res) {
                 filter.subcategory = subcategory
             }
             filter.isDeleted = false
+            if (Object.keys(filter).length > 3) {
+                return res.status(400).send({status: false, messgae: "Bad Request"})
+            }
             if (userId || category || subcategory) {
-                let getDataByFilter = await BookModel.find(filter).sort({title: 1})
+                let getDataByFilter = await BookModel.find(filter).select({title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1}).sort({title: 1})
                 if (getDataByFilter.length === 0){
                     return res.status(404).send({status: false, message: "No books found by given query"})
                 }
