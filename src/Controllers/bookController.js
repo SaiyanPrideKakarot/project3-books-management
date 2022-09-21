@@ -78,7 +78,7 @@ const getBooksByQuery = async function (req, res) {
     try {
         let bodyData = req.query
         if (Object.keys(bodyData).length === 0) {
-            let allBooks = await BookModel.find({isDeleted: true})
+            let allBooks = await BookModel.find({isDeleted: true}).sort({title: 1})
             return res.status(200).send({status: false, message: "List of All Books", data: allBooks})
         } else {
             let {userId, category, subcategory} = bodyData
@@ -103,7 +103,7 @@ const getBooksByQuery = async function (req, res) {
             }
             filter.isDeleted = false
             if (userId || category || subcategory) {
-                let getDataByFilter = await BookModel.find(filter)
+                let getDataByFilter = await BookModel.find(filter).sort({title: 1})
                 if (getDataByFilter.length === 0){
                     return res.status(404).send({status: false, message: "No books found by given query"})
                 }
