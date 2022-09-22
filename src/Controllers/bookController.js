@@ -1,7 +1,7 @@
-const BookModel = require('../Models/BookModel')
+const BookModel = require('../Models/bookModel')
 const UserModel = require('../Models/userModel')
 const mongoose = require('mongoose')
-const reviewmodel = require('../Models/reviewmodel')
+const reviewmodel = require('../Models/reviewModel')
 
 
 
@@ -323,4 +323,3 @@ const deleteBooks = async function (req, res) {
 
 
 module.exports = { createBooks, getBooksByQuery, getBookFromPath, updateBooks ,deleteBooks}
-
