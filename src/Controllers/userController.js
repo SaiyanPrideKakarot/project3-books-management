@@ -68,6 +68,9 @@ const createuser = async function (req, res) {
         }
 
         if (!isValid(name)) {
+            return res.status(400).send({ status: false, message: 'Name must be string and cannot be empty' })
+        }
+        if (!isValidName(name)) {
             return res.status(400).send({ status: false, message: 'Please enter valid name' })
         }
         name.toLowerCase()
