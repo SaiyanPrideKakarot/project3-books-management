@@ -295,9 +295,9 @@ const deleteBooks = async function (req, res) {
         if (!book_id) {
             return res.status(400).send({ status: false, message: 'Please Enter Book_id' })
         }
-        if (Object.keys(book_id).length == 0) {
-            return res.status(400).send({ status: false, message: 'Id not provided' })
-        }
+        // if (Object.keys(book_id).length == 0) {
+        //     return res.status(400).send({ status: false, message: 'Id not provided' })
+        // }
 
         if (!isValidObjectId(book_id)) {
             return res.status(400).send({ status: false, message: 'please provide a valid id' })
