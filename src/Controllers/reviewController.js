@@ -1,11 +1,3 @@
-// PUT /books/:bookId/review/:reviewId
-// Update the review - review, rating, reviewer's name.
-// Check if the bookId exists and is not deleted before updating the review. 
-//Check if the review exist before updating the review. Send an error response with appropirate status code //
-//like this if the book does not exist
-// Get review details like review, rating, reviewer's name in request body.
-// Return the updated book document with reviews data on successful operation. 
-//The response body should be in the form of JSON object like this
 const mongoose = require("mongoose")
 const ReviewModel = require("../Models/reviewModel")
 const ObjectId = mongoose.Types.ObjectId
@@ -46,8 +38,8 @@ const isValidString = function (data) {
 
 
 
-const reviewUpdate = async (req, res) => {
 
+const reviewUpdate = async function (req, res) {
     try {
         // let url = req.url
         // console.log(url)
@@ -137,13 +129,7 @@ const reviewUpdate = async (req, res) => {
 const createReview = async function (req, res) {
     try {
 
-        // let url = req.url.bookId
-        // console.log(url)
-
         
-        // if(url !== `/books/${ObjectId}/review`){
-        //     return res.status(400).send({ status: false, message: "hello" })  
-        // }
         bookIdInParams = req.params.bookId
         if (!isValidObjectId(bookIdInParams)) {
             return res.status(400).send({ status: false, message: "Please provid valid Book Id" })
