@@ -18,7 +18,7 @@ router.put("/books/:bookId", Middleware.authentication, Middleware.authorisation
 router.delete("/books/:bookId", Middleware.authentication, Middleware.authorisation, BookController.deleteBooks)
 router.post("/books/:bookId/review", ReviewController.createReview)
 router.put("/books/:bookId/review/:reviewId",ReviewController.reviewUpdate)
-
+router.delete("/books/:bookId/review/:reviewId",ReviewController.deleteReview)
 
 
 module.exports = router

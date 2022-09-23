@@ -171,7 +171,7 @@ const reviewUpdate = async function (req, res) {
         }
 
 
-        let updateReview = await ReviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId }, body, {new: true})
+        let updateReview = await ReviewModel.findOneAndUpdate({ _id: reviewId, bookId: bookId }, body, { new: true })
 
         let reviewsdata = await ReviewModel.find({ bookId: bookId, isDeleted: false })
         let count = reviewsdata.length
@@ -187,5 +187,44 @@ const reviewUpdate = async function (req, res) {
 }
 
 
+const deleteReview = async function (req, res) {
+    try {
+        const bookId = req.params.bookId;
+        let isValidbookID = mongoose.isValidObjectId(bookId);
+        if (!isValidbookID) {
+            return res.status(400).send({ status: false, msg: "Book Id is not valid!" })
+        }
+        const reviewId = req.params.reviewId;
+        let isValidReviewID = mongoose.isValidObjectId(reviewId);
+        if (!isValidReviewID) {
+            return res.status(400).send({ status: false, msg: "Review Id is not valid!" });
+        }
+        let bookIdCheck = await BookModel.findOne({ _id: bookId, isDeleted: false });
+        if (!bookIdCheck) {
+            return res.status(404).send({ status: false, message: "Book does not exist" });
+        }
 
-module.exports = { createReview, reviewUpdate }
+        let reviewIdCheck = await ReviewModel.findOne({ _id: reviewId, isDeleted: false });
+        if (!reviewIdCheck) {
+            return res.status(404).send({ status: false, message: "Review does not exist" })
+        }
+
+
+        let update = await ReviewModel.findOneAndUpdate({ _id: reviewId },
+            { $set: { isDeleted: true } }, { new: true })
+
+        let reviewsdata = await ReviewModel.find({ bookId: bookId, isDeleted: false })
+        let count = reviewsdata.length
+        let bookdetails = await BookModel.findOneAndUpdate({ _id: bookId }, { $set: { reviews: count } }).lean()
+
+        return res.status(200).send({ status: true, data: bookdetails })
+
+
+    } catch (error) {
+        res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+
+
+module.exports = { createReview, reviewUpdate, deleteReview }
