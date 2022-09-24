@@ -17,6 +17,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', router);
 
+app.use(function (req, res) {
+    var err = new Error('Not Found')
+    err.status = 404
+    return res.send({status: 404, message: 'Path not found'})
+})
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('Express app running on port ' + (process.env.PORT || 3000))
 });

@@ -39,7 +39,6 @@ const bookSchema =  mongoose.Schema({
     reviews: {
         type: Number,
         default: 0,
-        // comment :count,
         trim: true
     },
     deletedAt: {
@@ -53,7 +52,6 @@ const bookSchema =  mongoose.Schema({
     releasedAt: {
         type: Date,
         required: true
-        //format('YYYY-MM-DD')
     },
 
 }, { timestamps: true });

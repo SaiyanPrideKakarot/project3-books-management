@@ -21,14 +21,12 @@ const UserSchema =  mongoose.Schema({
     email: {
         type: String,
         required: "Email address is Mandatory",
-        // valid email,
         unique: true,
         trim: true
     },
     password: {
         type: String,
         required: "Password is Mandatory",
-        // minLen 8, maxLen 15,
         trim: true
     },
     address: {
