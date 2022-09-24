@@ -76,9 +76,6 @@ const createuser = async function (req, res) {
             return res.status(400).send({ status: false, message: 'Please Enter Valid Name' })
         }
         name = name.trim().toLowerCase()
-       
-        
-        
 
         if (!phone) {
             return res.status(400).send({ status: false, message: 'Please enter Mobile number' })
@@ -108,7 +105,6 @@ const createuser = async function (req, res) {
             return res.status(400).send({ status: false, message: 'please enter valid email address' })
         }
         email = email.trim().toLowerCase()
-        
 
 
         let isUniqueemail = await userModel.findOne({ email: email })
@@ -136,23 +132,21 @@ const createuser = async function (req, res) {
                 if (!isValid(address.street)) {
                     return res.status(400).send({ status: false, msg: "please provide vaild street" })
                 }
+                address.street = address.street.trim().toLowerCase()
             }
-            if (address.city){
-                address.city = address.city.trim().toLowerCase()
+            if (address.city) {
                 if (!isValid(address.city)) {
                     return res.status(400).send({ status: false, msg: "please provide vaild city" })
                 }
+                address.city = address.city.trim().toLowerCase()
             }
-
-            if (address.pincode){
-               address.pincode = address.pincode.trim()
+            if (address.pincode) {
                 if (!isValid(address.pincode)) {
                     return res.status(400).send({ status: false, msg: "please provide vaild pincode" })
                     }
                 }
+            }
 
-                
-        }
         let obj = { title, name, email, address, password, phone }
         //validation end
         const newUser = await userModel.create(obj);
@@ -163,7 +157,6 @@ const createuser = async function (req, res) {
         console.log(error)
         return res.status(500).send({ message: error.message })
     }
-
 }
 
 
@@ -176,7 +169,6 @@ const userLogin = async (req, res) => {
 
         if (Object.keys(body).length == 0) {
             return res.status(400).send({ status: false, msg: "please enter detail " })
-
         }
 
         if (!email) {
@@ -189,7 +181,7 @@ const userLogin = async (req, res) => {
         let emailExist = await userModel.findOne({ email: email })
 
         if (!emailExist) {
-            return res.status(400).send({ status: false, msg: "You Are Not Register, Please Try Again" })
+            return res.status(400).send({ status: false, msg: "You Are Not Registered, Please Try Again" })
         }
 
 
@@ -213,7 +205,7 @@ const userLogin = async (req, res) => {
         
         let token = jwt.sign({
             userId: userId._id
-        }, "this is secret key", { expiresIn: "2000000" })
+        }, "this is secret key", { expiresIn: '1500000' })
 
 
         res.setHeader("x-api-token", token)
