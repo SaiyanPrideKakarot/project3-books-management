@@ -9,7 +9,7 @@ const userModel = require('../Models/userModel')
 const jwt = require('jsonwebtoken')
 
 const isValidName = function (name) {
-    const nameRegex = /^[a-zA-Z]+(\s[a-zA-Z]+)?$/
+    const nameRegex = /^[a-zA-Z ]{2,30}$/
     return nameRegex.test(name)
 }
 
@@ -41,49 +41,57 @@ const createuser = async function (req, res) {
     try {
 
         let data = req.body
-        const { title, name, phone, email, password, address } = data;
+        let { title, name, phone, email, password, address } = data;
 
         if (Object.keys(data).length == 0) {
-            return res.status(400).send({ status: false, message: 'No data provided' })
+            return res.status(400).send({ status: false, message: 'Please Enter Details' })
         }
 
         if (!title) {
-            return res.status(400).send({ status: false, message: "Please enter Title" })
+            return res.status(400).send({ status: false, message: "Please Enter Title" })
         }
 
         if (!isValid(title)) {
-            return res.status(400).send({ status: false, message: "title is required" })
+            return res.status(400).send({ status: false, message: "Please Enter Valid Title" })
         }
 
         let Title = ["Mr", "Miss", "Mrs"]
         if (!Title.includes(title)) {
-            return res.status(400).send({ status: false, message: 'please provode appropriate title' })
+            return res.status(400).send({ status: false, message: 'Please Enter Valid Title =>["Mr", "Miss", "Mrs"]' })
         }
+       
 
 
 
 
         if (!name) {
-            return res.status(400).send({ status: false, message: "Name is required" })
+            return res.status(400).send({ status: false, message: "Please Enter Name" })
         }
 
         if (!isValid(name)) {
-            return res.status(400).send({ status: false, message: 'Name must be string and cannot be empty' })
+            return res.status(400).send({ status: false, message: 'Name Must Be String And Cannot Be Empty' })
         }
+        
         if (!isValidName(name)) {
-            return res.status(400).send({ status: false, message: 'Please enter valid name' })
+            return res.status(400).send({ status: false, message: 'Please Enter Valid Name' })
         }
-        name.toLowerCase()
+        name = name.trim().toLowerCase()
+       
+        
+        
 
         if (!phone) {
             return res.status(400).send({ status: false, message: 'Please enter Mobile number' })
         }
         if (!isValid(phone)) {
-            return res.status(400).send({ status: false, message: 'Phone Number is required' })
+            return res.status(400).send({ status: false, message: 'Please Enter Valid Phone Number' })
         }
+        
         if (!isMobile(phone)) {
-            return res.status(400).send({ status: false, message: 'please enter valid mobile Number' })
+            return res.status(400).send({ status: false, message: 'Please Enter Valid Phone Number' })
         }
+        
+        
 
 
         let isUniquephone = await userModel.findOne({ phone: phone })
@@ -99,7 +107,8 @@ const createuser = async function (req, res) {
         if (!isEmail(email)) {
             return res.status(400).send({ status: false, message: 'please enter valid email address' })
         }
-
+        email = email.trim().toLowerCase()
+        
 
 
         let isUniqueemail = await userModel.findOne({ email: email })
@@ -120,24 +129,29 @@ const createuser = async function (req, res) {
 
         if (address) {
             if (Object.keys(address).length == 0) {
-                return res.status(400).send({ status: false, msg: "please enter address value" })
+                return res.status(400).send({ status: false, msg: "please enter address Details" })
             }
             if (address.street) {
+                address.street = address.street.trim().toLowerCase()
                 if (!isValid(address.street)) {
                     return res.status(400).send({ status: false, msg: "please provide vaild street" })
                 }
             }
-            if (address.city)
+            if (address.city){
+                address.city = address.city.trim().toLowerCase()
                 if (!isValid(address.city)) {
                     return res.status(400).send({ status: false, msg: "please provide vaild city" })
                 }
+            }
 
-            if (address.pincode)
+            if (address.pincode){
+               address.pincode = address.pincode.trim()
                 if (!isValid(address.pincode)) {
                     return res.status(400).send({ status: false, msg: "please provide vaild pincode" })
+                    }
                 }
 
-
+                
         }
         let obj = { title, name, email, address, password, phone }
         //validation end
@@ -196,10 +210,10 @@ const userLogin = async (req, res) => {
 
 
         let userId = passwordCheck._id
-
+        
         let token = jwt.sign({
             userId: userId._id
-        }, "this is secret key", { expiresIn: '1500' })
+        }, "this is secret key", { expiresIn: "2000000" })
 
 
         res.setHeader("x-api-token", token)

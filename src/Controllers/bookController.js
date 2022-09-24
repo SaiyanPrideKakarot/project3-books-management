@@ -150,8 +150,8 @@ const getBooksByQuery = async function (req, res) {
                 filter.subcategory = subcategory
             }
             filter.isDeleted = false
-            if (Object.keys(filter).length > 3) {
-                return res.status(400).send({ status: false, messgae: "Bad Request" })
+            if (Object.keys(filter).length > 4) {
+                return res.status(400).send({ status: false, messgae: "enter valid input" })
             }
 
             if (userId || category || subcategory) {
