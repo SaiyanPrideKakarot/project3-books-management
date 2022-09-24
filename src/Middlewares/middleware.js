@@ -47,8 +47,7 @@ const authorisation = async function (req, res, next) {
             }
             let bookUserId = book.userId
             if (userLoggedIn != bookUserId) {
-                console.log(userLoggedIn)
-                console.log(bookUserId)
+                
                 return res.status(403).send({ status: false, message: "You are not authorized user" })
             }
             next()

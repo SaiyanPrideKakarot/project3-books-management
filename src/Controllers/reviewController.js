@@ -86,9 +86,9 @@ const createReview = async function (req, res) {
 
         let reviewsdata = await ReviewModel.find({ bookId: bookIdInParams, isDeleted: false })
         let count = reviewsdata.length
-        let bookdetails = await BookModel.findOneAndUpdate({ _id: bookIdInParams }, { $set: { reviews: count } }).lean()
+        let bookdetails = await BookModel.findOneAndUpdate({ _id: bookIdInParams }, { $set: { reviews: count }},{new:true}).lean()
         bookdetails.reviewsData = reviewsdata
-        console.log(bookdetails)
+        
 
         return res.status(201).send({ status: true, message: "Success", data: bookdetails })
     } catch (error) {
@@ -214,7 +214,7 @@ const deleteReview = async function (req, res) {
 
         let reviewsdata = await ReviewModel.find({ bookId: bookId, isDeleted: false })
         let count = reviewsdata.length
-        let bookdetails = await BookModel.findOneAndUpdate({ _id: bookId }, { $set: { reviews: count } }).lean()
+        let bookdetails = await BookModel.findOneAndUpdate({ _id: bookId }, { $set: { reviews: count }},{new:true} ).lean()
         bookdetails.reviewsData = reviewsdata
         return res.status(200).send({ status: true, data: bookdetails })
 

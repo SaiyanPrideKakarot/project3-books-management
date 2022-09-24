@@ -20,7 +20,7 @@ app.use('/', router);
 app.use(function (req, res) {
     var err = new Error('Not Found')
     err.status = 404
-    return res.send({status: 404, message: 'Path not found'})
+    return res.status(404).send({status: false, message: 'Path not found'})
 })
 
 app.listen(process.env.PORT || 3000, function () {
