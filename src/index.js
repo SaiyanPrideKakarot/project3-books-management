@@ -18,8 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', router);
 
 app.use(function (req, res) {
-    var err = new Error('Not Found')
-    err.status = 404
     return res.status(404).send({status: false, message: 'Path not found'})
 })
 
