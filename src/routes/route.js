@@ -5,7 +5,7 @@ const router = express.Router()
 const userController = require("../Controllers/userController")
 const BookController = require('../Controllers/bookController')
 const ReviewController = require('../Controllers/reviewController')
-const Middleware = require('../Middlewares/middleware')
+const Middleware = require('../Middlewares/auth')
 
 
 router.post("/register",userController.createuser)

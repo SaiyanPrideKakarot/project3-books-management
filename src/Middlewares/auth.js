@@ -1,14 +1,13 @@
 const BookModel = require('../Models/bookModel')
 const jwt = require('jsonwebtoken')
-const ms = require("../Controllers/userController")
 
 
 
 const authentication = async function (req, res, next) {
     try {
-        let token = req.headers["x-Api-Token"]
+        let token = req.headers["x-Api-Key"]
         if (!token) {
-            token = req.headers["x-api-token"]
+            token = req.headers["x-api-key"]
         }
         if (!token) {
             return res.status(401).send({ status: false, message: "Token must be provided" })
@@ -21,7 +20,7 @@ const authentication = async function (req, res, next) {
             return res.status(401).send({ status: false, message: "Token expired" })
         }
         req.decodedToken = decodedToken
-        res.setHeader("x-api-token", token)
+        res.setHeader("x-api-key", token)
         next()
     } catch (error) {
         console.log(error)
@@ -47,7 +46,6 @@ const authorisation = async function (req, res, next) {
             }
             let bookUserId = book.userId
             if (userLoggedIn != bookUserId) {
-                
                 return res.status(403).send({ status: false, message: "You are not authorized user" })
             }
             next()

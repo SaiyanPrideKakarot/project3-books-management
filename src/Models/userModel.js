@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const UserSchema =  mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     title: {
         type: String,
         required: "Title is Mandatory",

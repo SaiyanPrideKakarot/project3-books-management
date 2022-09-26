@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const bookSchema =  mongoose.Schema({
+const bookSchema = new mongoose.Schema({
     title: {
         type: String,
         required: 'Title is required',
@@ -41,10 +41,7 @@ const bookSchema =  mongoose.Schema({
         default: 0,
         trim: true
     },
-    deletedAt: {
-        type: Date,
-        default: null
-    },
+    deletedAt: Date,
     isDeleted: {
         type: Boolean,
         default: false

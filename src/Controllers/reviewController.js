@@ -43,7 +43,7 @@ const createReview = async function (req, res) {
         }
         let data = req.body
         if (Object.keys(data).length == 0) {
-            return res.status(400).send({ status: false, msg: "Please Enter Details" })
+            return res.status(400).send({ status: false, message: "Please Enter Details" })
         }
         let { bookId, reviewedBy, rating, review } = data
 
@@ -52,14 +52,13 @@ const createReview = async function (req, res) {
         }
 
         if (!reviewedBy) {
-            reviewedBy = "Kaise laga mera majak"
+            reviewedBy = "Guest"
         }
         if (!isValidString(reviewedBy)) {
             return res.status(400).send({ status: false, message: "Reviewed By must be string and cannot be empty" })
         }
 
 
-        let regex1 = /^\d+$/
 
         if (!rating) {
             return res.status(400).send({ status: false, message: "Ratings is required" })
@@ -70,8 +69,10 @@ const createReview = async function (req, res) {
         if (rating < 1 || rating > 5) {
             return res.status(400).send({ status: false, message: "Ratings should be from 1 to 5" })
         }
+
+        let regex1 = /^\d+$/
         if (!regex1.test(rating)) {
-            return res.status(400).send({ status: false, message: "Ratings should  Not Be in Decimal" })
+            return res.status(400).send({ status: false, message: "Ratings should Not Be in Decimal" })
         }
 
         if (review) {
@@ -104,40 +105,34 @@ const reviewUpdate = async function (req, res) {
         let bookId = req.params.bookId
         let reviewId = req.params.reviewId
 
-        if (!bookId) {
-            return res.status(400).send({ status: false, msg: "Please Enter BookId" })
-        }
-        if (!reviewId) {
-            return res.status(400).send({ status: false, msg: "Please Enter reviewId" })
-        }
 
         if (!ObjectId.isValid(bookId)) {
-            return res.status(400).send({ status: false, msg: "Please Enter valid bookId" })
+            return res.status(400).send({ status: false, message: "Please Enter valid bookId" })
         }
         if (!ObjectId.isValid(reviewId)) {
-            return res.status(400).send({ status: false, msg: "Please Enter valid reviewId" })
+            return res.status(400).send({ status: false, message: "Please Enter valid reviewId" })
         }
 
         let checkBookId = await BookModel.findOne({ _id: bookId, isDeleted: false })
         if (!checkBookId) {
-            return res.status(404).send({ status: false, msg: "BookID Not Valid" })
+            return res.status(404).send({ status: false, message: "BookID Not Valid" })
         }
 
         let checkReviewId = await ReviewModel.findOne({ _id: reviewId, bookId: bookId, isDeleted: false })
         if (!checkReviewId) {
-            return res.status(404).send({ status: false, msg: "ReviewID Not Valid" })
+            return res.status(404).send({ status: false, message: "ReviewID Not Valid" })
         }
 
         let body = req.body
         if (Object.keys(body).length == 0) {
-            return res.status(400).send({ status: false, msg: "Please Enter Details" })
+            return res.status(400).send({ status: false, message: "Please Enter Details" })
         }
 
         const arr = ["review", "rating", "reviewedBy"]
         let key = (Object.keys(body))
 
         if ((!key.every(ele => arr.includes(ele)) || (key.length > 3))) {
-            return res.status(400).send({ status: false, msg: "Please Enter Valid Details" })
+            return res.status(400).send({ status: false, message: "Please Enter Valid Details" })
         }
 
         let { review, rating, reviewedBy } = body
@@ -146,7 +141,7 @@ const reviewUpdate = async function (req, res) {
 
         if (review) {
             if (!isValid(review)) {
-                return res.status(400).send({ status: false, msg: "Please Enter Valid review " })
+                return res.status(400).send({ status: false, message: "Please Enter Valid review " })
             }
         }
 
@@ -155,7 +150,7 @@ const reviewUpdate = async function (req, res) {
 
         if (rating) {
             if (!IsValidRating(rating)) {
-                return res.status(400).send({ status: false, msg: "Please Enter Valid Rating " })
+                return res.status(400).send({ status: false, message: "Please Enter Valid Rating " })
             }
             if (!(regex.test(rating))) {
                 return res.status(400).send({ status: false, message: "Ratings cannot be in decimals" })
@@ -165,7 +160,7 @@ const reviewUpdate = async function (req, res) {
 
         if (reviewedBy) {
             if (!isValid(reviewedBy)) {
-                return res.status(400).send({ status: false, msg: "Please Enter Valid  Name" })
+                return res.status(400).send({ status: false, message: "Please Enter Valid  Name" })
             }
         }
 
@@ -174,7 +169,7 @@ const reviewUpdate = async function (req, res) {
 
         let reviewsdata = await ReviewModel.find({ bookId: bookId, isDeleted: false })
         let count = reviewsdata.length
-        let bookdetails = await BookModel.findOneAndUpdate({ _id: bookId }, { $set: { reviews: count } }).lean()
+        let bookdetails = await BookModel.findOneAndUpdate({ _id: bookId }, { $set: { reviews: count } }, {new: true}).lean()
         bookdetails.reviewsData = reviewsdata
 
         return res.status(201).send({ status: true, message: "Success", data: bookdetails })
@@ -191,12 +186,12 @@ const deleteReview = async function (req, res) {
         const bookId = req.params.bookId;
         let isValidbookID = mongoose.isValidObjectId(bookId);
         if (!isValidbookID) {
-            return res.status(400).send({ status: false, msg: "Book Id is not valid!" })
+            return res.status(400).send({ status: false, message: "Book Id is not valid!" })
         }
         const reviewId = req.params.reviewId;
         let isValidReviewID = mongoose.isValidObjectId(reviewId);
         if (!isValidReviewID) {
-            return res.status(400).send({ status: false, msg: "Review Id is not valid!" });
+            return res.status(400).send({ status: false, message: "Review Id is not valid!" });
         }
         let bookIdCheck = await BookModel.findOne({ _id: bookId, isDeleted: false });
         if (!bookIdCheck) {
@@ -216,7 +211,7 @@ const deleteReview = async function (req, res) {
         let count = reviewsdata.length
         let bookdetails = await BookModel.findOneAndUpdate({ _id: bookId }, { $set: { reviews: count }},{new:true} ).lean()
         bookdetails.reviewsData = reviewsdata
-        return res.status(200).send({ status: true, data: bookdetails })
+        return res.status(200).send({ status: true, message: 'Success', data: bookdetails })
 
 
     } catch (error) {
