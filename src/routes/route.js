@@ -20,5 +20,7 @@ router.post("/books/:bookId/review", ReviewController.createReview)
 router.put("/books/:bookId/review/:reviewId", ReviewController.reviewUpdate)
 router.delete("/books/:bookId/review/:reviewId", ReviewController.deleteReview)
 
+router.post("/write-file-aws", BookController.uploadBookCover)
+
 
 module.exports = router

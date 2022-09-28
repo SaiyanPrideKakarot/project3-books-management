@@ -2,6 +2,34 @@ const BookModel = require('../Models/bookModel')
 const UserModel = require('../Models/userModel')
 const mongoose = require('mongoose')
 const reviewmodel = require('../Models/reviewModel')
+const aws = require('aws-sdk')
+
+
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRZNIRGT6N",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
+
+let uploadFile = async (file) => {
+    return new Promise(function (resolve, reject) {
+        let s3 = new aws.S3({apiVersion: "2006-03-01"})
+        let uploadParams = {
+            ACL: "public-read",
+            Bucket: "classroom-training-bucket",
+            Key: "group47/" + file.originalname,
+            Body: file.buffer
+        }
+        s3.upload(uploadParams, function (error, data) {
+            if (error) {
+                return reject({"error": error})
+            }
+            console.log(data)
+            console.log("File uploaded Successfully")
+            return resolve(data.Location)
+        })
+    })
+}
 
 
 
@@ -117,6 +145,22 @@ const createBooks = async function (req, res) {
     } catch (error) {
         console.log(error)
         return res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+
+const uploadBookCover = async function (req, res) {
+    try {
+        let files = req.files
+        if (files && files.length > 0) {
+            let uploadFileUrl = await uploadFile(files[0])
+            res.status(201).send({status: true, message: "File uploaded Successfully", data: uploadFileUrl})
+        } else {
+            res.status(400).send({status: false, message: "No file found"})
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({status: false, error: error})
     }
 }
 
@@ -329,4 +373,4 @@ const deleteBooks = async function (req, res) {
 
 
 
-module.exports = { createBooks, getBooksByQuery, getBookFromPath, updateBooks, deleteBooks }
+module.exports = { createBooks, getBooksByQuery, getBookFromPath, updateBooks, deleteBooks, uploadBookCover }
