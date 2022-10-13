@@ -13,7 +13,7 @@ aws.config.update({
 
 let uploadFile = async (file) => {
     return new Promise(function (resolve, reject) {
-        let s3 = new aws.S3({apiVersion: "2006-03-01"})
+        let s3 = new aws.S3({ apiVersion: "2006-03-01" })
         let uploadParams = {
             ACL: "public-read",
             Bucket: "classroom-training-bucket",
@@ -22,7 +22,7 @@ let uploadFile = async (file) => {
         }
         s3.upload(uploadParams, function (error, data) {
             if (error) {
-                return reject({"error": error})
+                return reject({ "error": error })
             }
             console.log(data)
             console.log("File uploaded Successfully")
@@ -154,13 +154,13 @@ const uploadBookCover = async function (req, res) {
         let files = req.files
         if (files && files.length > 0) {
             let uploadFileUrl = await uploadFile(files[0])
-            res.status(201).send({status: true, message: "File uploaded Successfully", data: uploadFileUrl})
+            return res.status(201).send({ status: true, message: "File uploaded Successfully", data: uploadFileUrl })
         } else {
-            res.status(400).send({status: false, message: "No file found"})
+            return res.status(400).send({ status: false, message: "No file found" })
         }
     } catch (error) {
         console.log(error)
-        res.status(500).send({status: false, error: error})
+        res.status(500).send({ status: false, error: error })
     }
 }
 
@@ -361,8 +361,9 @@ const deleteBooks = async function (req, res) {
 
 
         let deletedBook = await BookModel.findOneAndUpdate({ _id: book_id },
-            { $set: { isDeleted: true, deletedAt: Date.now() }
-        })
+            {
+                $set: { isDeleted: true, deletedAt: Date.now() }
+            })
 
         return res.status(200).send({ status: true, message: 'Book deleted successfully' })
     }
